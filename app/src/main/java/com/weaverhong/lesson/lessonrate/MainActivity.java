@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText mEditText;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             p = getSharedPreferences("myrate", MODE_PRIVATE);
         } catch (Exception e) {
             Log.e("MYEXCEPTION", "error get sharedpreference");
-            Toast.makeText(MainActivity.this, "ERROR GETTING SHARED PREFERENCE!", Toast.LENGTH_SHORT);
+            Toast.makeText(MainActivity.this, "ERROR GETTING SHARED PREFERENCE!", Toast.LENGTH_SHORT).show();
         }
 
         mButtonEuro.setOnClickListener(new View.OnClickListener() {
@@ -45,11 +47,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!checkIllegal()) {
                     Log.e("MYEXCEPTION", "ill input");
-                    Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT).show();
                 } else {
                     Float f = new Float(mEditText.getText().toString());
                     Float rate = p.getFloat("euro",-1);
                     Float result = f * rate;
+                    new DecimalFormat("#.00").format(result);
                     String r = "" + result;
                     mText.setText(r);
                 }
@@ -61,11 +64,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!checkIllegal()) {
                     Log.e("MYEXCEPTION", "ill input");
-                    Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT).show();
                 } else {
                     Float f = new Float(mEditText.getText().toString());
                     Float rate = p.getFloat("dollar",-1);
                     Float result = f * rate;
+                    new DecimalFormat("#.00").format(result);
                     String r = "" + result;
                     mText.setText(r);
                 }
@@ -77,11 +81,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!checkIllegal()) {
                     Log.e("MYEXCEPTION", "ill input");
-                    Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT).show();
                 } else {
                     Float f = new Float(mEditText.getText().toString());
                     Float rate = p.getFloat("won",-1);
                     Float result = f * rate;
+                    new DecimalFormat("#.00").format(result);
                     String r = "" + result;
                     mText.setText(r);
                 }
@@ -117,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_item3:
                 type = "won";
                 break;
+            default:
         }
 
         Intent intent = RateEditActivity.newIntent(

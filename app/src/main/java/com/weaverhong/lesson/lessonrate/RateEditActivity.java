@@ -3,6 +3,7 @@ package com.weaverhong.lesson.lessonrate;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.text.UnicodeSetSpanner;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +35,8 @@ public class RateEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate_edit);
+
+
         mTextView = (TextView) findViewById(R.id.edit_text);
         mEditText = (EditText) findViewById(R.id.edit_edittext);
         mButton = (Button) findViewById(R.id.edit_button);
@@ -47,11 +50,10 @@ public class RateEditActivity extends AppCompatActivity {
                 try {
                     SharedPreferences p = getSharedPreferences("myrate", MODE_PRIVATE);
                     SharedPreferences.Editor ep = p.edit();
-                    ep.putFloat(EXTRA_RATE, new Float(mEditText.getText().toString()));
+                    ep.putFloat(getIntent().getStringExtra(EXTRA_TYPE), new Float(mEditText.getText().toString()));
                     ep.commit();
                 } catch (Exception e) {
                     Log.e("MYEXCEPTION", e.toString());
-                    Toast.makeText(RateEditActivity.this, "fuck", Toast.LENGTH_SHORT);
                 }
             }
         });
