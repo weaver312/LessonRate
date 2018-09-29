@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                     Float rate = p.getFloat("euro",-1);
                     Float result = f * rate;
                     new DecimalFormat("#.00").format(result);
-                    String r = "" + result;
+                    String r = new DecimalFormat("#.00").format(result);
                     mText.setText(r);
                 }
             }
@@ -69,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     Float f = new Float(mEditText.getText().toString());
                     Float rate = p.getFloat("dollar",-1);
                     Float result = f * rate;
-                    new DecimalFormat("#.00").format(result);
-                    String r = "" + result;
+                    String r = new DecimalFormat("#.00").format(result);
                     mText.setText(r);
                 }
             }
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     Float rate = p.getFloat("won",-1);
                     Float result = f * rate;
                     new DecimalFormat("#.00").format(result);
-                    String r = "" + result;
+                    String r = new DecimalFormat("#.00").format(result);
                     mText.setText(r);
                 }
             }
