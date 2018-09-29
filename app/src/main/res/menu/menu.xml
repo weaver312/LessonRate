@@ -9,4 +9,7 @@
     <item
         android:id="@+id/menu_item3"
         android:title="edit WON rate"/>
+    <item
+        android:id="@+id/menu_item4"
+        android:title="refresh from network"/>
 </menu>

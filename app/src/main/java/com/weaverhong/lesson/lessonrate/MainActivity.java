@@ -2,6 +2,8 @@ package com.weaverhong.lesson.lessonrate;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +15,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DecimalFormat;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Runnable{
 
     private EditText mEditText;
     private TextView mText;
@@ -23,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mButtonDollar;
     private Button mButtonWon;
     private SharedPreferences p = null;
+    private Handler mHandler;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -50,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT).show();
                 } else {
                     Float f = new Float(mEditText.getText().toString());
-                    Float rate = p.getFloat("euro",-1);
+                    Float rate = p.getFloat("EUR",-1);
                     Float result = f * rate;
                     new DecimalFormat("#.00").format(result);
                     String r = new DecimalFormat("#.00").format(result);
@@ -67,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT).show();
                 } else {
                     Float f = new Float(mEditText.getText().toString());
-                    Float rate = p.getFloat("dollar",-1);
+                    Float rate = p.getFloat("USD",-1);
                     Float result = f * rate;
                     String r = new DecimalFormat("#.00").format(result);
                     mText.setText(r);
@@ -83,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "bad input !!",Toast.LENGTH_SHORT).show();
                 } else {
                     Float f = new Float(mEditText.getText().toString());
-                    Float rate = p.getFloat("won",-1);
+                    Float rate = p.getFloat("KRW",-1);
                     Float result = f * rate;
                     new DecimalFormat("#.00").format(result);
                     String r = new DecimalFormat("#.00").format(result);
@@ -91,6 +102,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+            }
+        };
 
     }
 
@@ -113,15 +131,17 @@ public class MainActivity extends AppCompatActivity {
         String type = "";
         switch (item.getItemId()) {
             case R.id.menu_item1:
-                type = "euro";
+                type = "EUR";
                 break;
             case R.id.menu_item2:
-                type = "dollar";
+                type = "USD";
                 break;
             case R.id.menu_item3:
-                type = "won";
+                type = "KRW";
                 break;
-            default:
+            case R.id.menu_item4:
+                refreshdata();
+                return true;
         }
 
         Intent intent = RateEditActivity.newIntent(
@@ -131,5 +151,68 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
 
         return true;
+    }
+
+    private void refreshdata() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final String[] targetrates = {"https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=CNY&to_currency=USD&apikey=5ZJSE6C84I3D161L",
+                                        "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=CNY&to_currency=KRW&apikey=5ZJSE6C84I3D161L",
+                                        "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=CNY&to_currency=EUR&apikey=5ZJSE6C84I3D161L"};
+                    for (String s : targetrates) {
+                        URL u = new URL(s);
+                        HttpURLConnection http = (HttpURLConnection) u.openConnection();
+                        InputStream in = http.getInputStream();
+                        final String response = fromInputStreamtoString(in);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    JSONObject j = new JSONObject(response).getJSONObject("Realtime Currency Exchange Rate");
+//                                    Log.e("MYEXCEPTION",response);
+//                                    Log.e("MYEXCEPTION",j.toString());
+//                                    Toast.makeText(MainActivity.this,j.getString("3. To_Currency Code"),Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(MainActivity.this,j.getString("5. Exchange Rate"),Toast.LENGTH_SHORT).show();
+                                    SharedPreferences.Editor ep = p.edit();
+                                    ep.putFloat(j.getString("3. To_Currency Code"),
+                                                new Float(j.getString("5. Exchange Rate")));
+                                    ep.commit();
+                                } catch (Exception e) {
+                                    Log.e("MYEXCEPTION",e.toString());
+                                }
+                            }
+                        });
+                    }
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this,"refresh complete!!",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("MYEXCEPTION",e.toString());
+                }
+            }
+        }).start();
+    }
+
+    private static String fromInputStreamtoString(InputStream is) throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = -1;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+        is.close();
+        String state = os.toString();
+        os.close();
+        return state;
+    }
+    @Override
+    public void run() {
+
     }
 }
