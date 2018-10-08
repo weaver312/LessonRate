@@ -70,13 +70,13 @@ public class MainActivity extends AppCompatActivity implements Runnable{
         int currentday = new Integer(simpleDateFormat.format(date));
         if (lastday != currentday) {
             refreshdata();
-            Toast.makeText(this,"UPDATE DATA AUTOMATICLY !!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"UPDATE DATA AUTOMATICLY !!", Toast.LENGTH_LONG).show();
             SharedPreferences.Editor ep = p.edit();
             ep.putInt("REFRESHDATE",currentday);
             Toast.makeText(this,"REFRESHDATE: " + currentday, Toast.LENGTH_LONG).show();
             ep.commit();
         } else {
-            Toast.makeText(this,"HAVE UPDATED TODAY, WILL NOT UPDATE NOW !", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"HAVE UPDATED TODAY, WILL NOT UPDATE NOW !", Toast.LENGTH_LONG).show();
         }
 
         mButtonEuro.setOnClickListener(new View.OnClickListener() {
