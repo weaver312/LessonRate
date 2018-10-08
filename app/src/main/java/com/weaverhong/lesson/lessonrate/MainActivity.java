@@ -27,6 +27,8 @@ import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity implements Runnable{
 
+    public static final String KEY_MONEY = "KEY_MONEY";
+
     private EditText mEditText;
     private TextView mText;
     private Button mButtonEuro;
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements Runnable{
     private Handler mHandler;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -45,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements Runnable{
         mButtonDollar = (Button) findViewById(R.id.button_dollar);
         mButtonEuro = (Button) findViewById(R.id.button_euro);
         mButtonWon = (Button) findViewById(R.id.button_won);
+
+        if (savedInstanceState != null) {
+            mText.setText(""+savedInstanceState.getString(KEY_MONEY, "-1"));
+        }
 
         try {
             p = getSharedPreferences("myrate", MODE_PRIVATE);
@@ -119,6 +125,12 @@ public class MainActivity extends AppCompatActivity implements Runnable{
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(KEY_MONEY, (mText.getText().toString()));
     }
 
     @Override
