@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TimeUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Time;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements Runnable{
 
@@ -57,6 +61,22 @@ public class MainActivity extends AppCompatActivity implements Runnable{
         } catch (Exception e) {
             Log.e("MYEXCEPTION", "error get sharedpreference");
             Toast.makeText(MainActivity.this, "ERROR GETTING SHARED PREFERENCE!", Toast.LENGTH_SHORT).show();
+        }
+
+        // 每日第一次去网上更新数据
+        int lastday = p.getInt("REFRESHDATE",19700101);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        Date date = new Date(System.currentTimeMillis());
+        int currentday = new Integer(simpleDateFormat.format(date));
+        if (lastday != currentday) {
+            refreshdata();
+            Toast.makeText(this,"UPDATE DATA AUTOMATICLY !!", Toast.LENGTH_SHORT).show();
+            SharedPreferences.Editor ep = p.edit();
+            ep.putInt("REFRESHDATE",currentday);
+            Toast.makeText(this,"REFRESHDATE: " + currentday, Toast.LENGTH_LONG).show();
+            ep.commit();
+        } else {
+            Toast.makeText(this,"HAVE UPDATED TODAY, WILL NOT UPDATE NOW !", Toast.LENGTH_SHORT).show();
         }
 
         mButtonEuro.setOnClickListener(new View.OnClickListener() {
