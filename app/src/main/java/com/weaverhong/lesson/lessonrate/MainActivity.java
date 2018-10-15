@@ -1,5 +1,6 @@
 package com.weaverhong.lesson.lessonrate;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -40,6 +41,13 @@ public class MainActivity extends AppCompatActivity implements Runnable{
     private Button mButtonWon;
     private SharedPreferences p = null;
     private Handler mHandler;
+
+    public static Intent newInstance(Context context, String name, String value) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("name", name);
+        intent.putExtra("value", value);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
